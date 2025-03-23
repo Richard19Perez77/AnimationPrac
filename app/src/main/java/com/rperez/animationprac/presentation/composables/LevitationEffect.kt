@@ -64,9 +64,9 @@ fun LevitationEffect() {
         }
 
         Surface(
-            shadowElevation = animatedDp,
             modifier = Modifier
-                .padding(32.dp)
+                .padding(32.dp),
+            shadowElevation = animatedDp
         ) {
             Text(
                 modifier = Modifier

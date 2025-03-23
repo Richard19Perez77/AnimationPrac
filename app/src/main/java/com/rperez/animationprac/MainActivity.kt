@@ -17,6 +17,7 @@ import com.rperez.animationprac.presentation.composables.CrossfadeDemo
 import com.rperez.animationprac.presentation.composables.FadingBox
 import com.rperez.animationprac.presentation.composables.LevitationEffect
 import com.rperez.animationprac.presentation.composables.SlideFadeAnimation
+import com.rperez.animationprac.presentation.composables.Snowfall
 import com.rperez.animationprac.ui.theme.AnimationPracTheme
 
 class MainActivity : ComponentActivity() {
@@ -28,47 +29,53 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier
                         .fillMaxSize()
                 ) {
-                    Box(
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        val height = LocalConfiguration.current.screenHeightDp
-                        LazyColumn {
-                            item(key = 1) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(height.dp)
-                                ) {
-                                    FadingBox()
-                                }
+                    val height = LocalConfiguration.current.screenHeightDp
+                    LazyColumn {
+                        item(key = 1) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(height.dp)
+                            ) {
+                                FadingBox()
                             }
-                            item(key = 2) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(height.dp)
-                                ) {
-                                    CrossfadeDemo()
-                                }
+                        }
+                        item(key = 2) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(height.dp)
+                            ) {
+                                CrossfadeDemo()
                             }
-                            item(key = 3) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(height.dp)
-                                ) {
-                                    SlideFadeAnimation()
-                                }
+                        }
+                        item(key = 3) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(height.dp)
+                            ) {
+                                SlideFadeAnimation()
                             }
-                            item(key = 4) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .height(height.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    LevitationEffect()
-                                }
+                        }
+                        item(key = 4) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .height(height.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                LevitationEffect()
+                            }
+                        }
+                        item(key = 5) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .height(height.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Snowfall()
                             }
                         }
                     }

@@ -28,8 +28,8 @@ fun generateRandomSnowflake(canvasHeight: Float): Snowflake {
     return Snowflake(
         x = Random.nextFloat(),
         y = Random.nextFloat() * canvasHeight,
-        radius = Random.nextFloat() * 2f + 2f, // Size between 2 and 4
-        speed = Random.nextFloat() * 1.5f + 0.5f  // Speed between 0.5 and 2
+        radius = Random.nextFloat() * 4f + 1f, // Size between 1 and 5
+        speed = Random.nextFloat() * 2.5f + 1.5f  // Speed between 1.5 and 4.0
     )
 }
 

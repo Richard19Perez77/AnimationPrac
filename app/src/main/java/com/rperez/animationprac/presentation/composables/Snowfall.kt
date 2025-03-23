@@ -44,9 +44,12 @@ fun DrawScope.drawSnowflake(snowflake: Snowflake, height: Float) {
 @Composable
 fun Snowfall() {
     var canvasHeight by remember { mutableFloatStateOf(0f) }
+    var snowflakes by remember { mutableStateOf<List<Snowflake>>(emptyList()) }
 
-    var snowflakes by remember {
-        mutableStateOf(List(100) { generateRandomSnowflake(canvasHeight) })
+    LaunchedEffect(canvasHeight) {
+        if (canvasHeight > 0 && snowflakes.isEmpty()) {
+            snowflakes = List(100) { generateRandomSnowflake(canvasHeight) }
+        }
     }
 
     LaunchedEffect(Unit) {

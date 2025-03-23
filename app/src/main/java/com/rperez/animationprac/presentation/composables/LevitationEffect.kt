@@ -45,6 +45,11 @@ fun LevitationEffect() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
+        Text(
+            modifier = Modifier.width(150.dp),
+            text = "elevation: ${animatedDp.value.toInt()}.dp"
+        )
+
         Box(
             modifier = Modifier
                 .shadow(elevation = animatedDp)
@@ -54,7 +59,7 @@ fun LevitationEffect() {
                     .background(Color.White)
                     .padding(8.dp)
                     .width(200.dp),
-                text = "box ${animatedDp.value}",
+                text = "box",
             )
         }
 

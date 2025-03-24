@@ -4,6 +4,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationEndReason
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -36,21 +38,24 @@ fun FourWayFlyOut() {
     var endOffset by remember { mutableStateOf<Offset?>(null) }
     val offset = remember { Animatable(Offset.Zero, Offset.VectorConverter) }
 
-    var displayText by remember { mutableStateOf("")}
+    var displayText by remember { mutableStateOf("") }
 
     if (selectedPerson != null) {
         selectedPerson?.let { person ->
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(color = Color.Red)
                     .clickable(onClick = { selectedPerson = null }),
             ) {
                 // Animate only when both are attached and valid
                 LaunchedEffect(startOffset, positionEnd) {
-                    if (startOffset != null && endOffset != null) {
-                        offset.snapTo(startOffset!!)
-                        displayText = person.name
-                        offset.animateTo(endOffset!!, animationSpec = tween(1000))
+                    startOffset?.let { s ->
+                        endOffset?.let { e ->
+                            offset.snapTo(s)
+                            displayText = person.name
+                            offset.animateTo(e, animationSpec = tween(1000))
+                        }
                     }
                 }
 
@@ -76,7 +81,9 @@ fun FourWayFlyOut() {
         }
     } else {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Color.Blue),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

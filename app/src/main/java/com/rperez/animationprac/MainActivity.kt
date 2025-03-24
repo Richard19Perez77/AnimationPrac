@@ -3,7 +3,16 @@ package com.rperez.animationprac
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,14 +25,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -99,36 +107,45 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                         item(key = 6) {
+                            val people = remember {
+                                listOf<Person>(
+                                    Person(),
+                                    Person(),
+                                    Person(),
+                                    Person()
+                                )
+                            }
+
+                            var selectedPerson by remember { mutableStateOf<Person?>(null) }
+
+
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .height(height.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                val people = remember {
-                                    listOf<Person>(
-                                        Person(),
-                                        Person(),
-                                        Person(),
-                                        Person()
-                                    )
-                                }
-
-                                LazyColumn {
-                                    items(people, key = { it.id }) { person ->
-                                        Column(
-                                            modifier = Modifier.fillMaxWidth(),
+                                AnimatedContent(
+                                    targetState = selectedPerson,
+                                    transitionSpec = {
+                                        fadeIn(animationSpec = tween(300)) + slideInHorizontally() togetherWith
+                                                fadeOut(animationSpec = tween(300)) + slideOutHorizontally()
+                                    }
+                                ) { item ->
+                                    if (item != null) {
+                                        PersonDetails(
+                                            person = item,
+                                            onDismiss = { selectedPerson = null }
+                                        )
+                                    } else {
+                                        LazyColumn(
+                                            modifier = Modifier.fillMaxSize(),
+                                            verticalArrangement = Arrangement.Center,
                                             horizontalAlignment = Alignment.CenterHorizontally
                                         ) {
-                                            var isSelected by remember { mutableStateOf(false) }
-                                            if (isSelected) {
-                                                PersonDetails(
-                                                    person = person,
-                                                    onDismiss = { isSelected = false }
-                                                )
-                                            } else {
-                                                Button(onClick = {
-                                                    isSelected = true
+                                            items(people, key = { it.id }) { person ->
+                                                Box(modifier = Modifier.clickable {
+                                                    selectedPerson = person
                                                 }) {
                                                     Text(text = person.name)
                                                 }
@@ -153,7 +170,7 @@ fun PersonDetails(person: Person, onDismiss: () -> Unit) {
         modifier = Modifier
             .padding(32.dp)
             .fillMaxSize()
-            .background(Color.Blue)
+            .background(Color.LightGray)
             .clickable { onDismiss() }
     ) {
         Column(

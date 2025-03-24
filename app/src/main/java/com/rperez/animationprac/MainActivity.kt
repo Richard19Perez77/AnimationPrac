@@ -100,6 +100,16 @@ class MainActivity : ComponentActivity() {
                                 FourWayFlyOut()
                             }
                         }
+                        item(key = 8) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .height(height.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                // todo add new composable with crossfade
+                            }
+                        }
                     }
                 }
             }

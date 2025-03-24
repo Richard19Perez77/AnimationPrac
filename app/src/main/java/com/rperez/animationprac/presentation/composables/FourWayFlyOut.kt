@@ -22,6 +22,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.layout.positionInWindow
 
 @Composable
 fun FourWayFlyOut() {
@@ -59,11 +61,11 @@ fun FourWayFlyOut() {
                     Text(
                         text = person.name,
                         style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.onGloballyPositioned {
-                            positionEnd = it
-                            endOffset =
-                                positionEnd?.takeIf { it.isAttached }?.localToWindow(Offset.Zero)
-
+                        modifier = Modifier.onGloballyPositioned { coords ->
+                            positionEnd = coords
+                            positionEnd?.takeIf { it.isAttached }?.let {
+                                endOffset = it.positionInParent()
+                            }
                         }
                     )
                 }
@@ -79,13 +81,13 @@ fun FourWayFlyOut() {
                 text = people[0].name,
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier
-                    .onGloballyPositioned { coordinates ->
-                        positionStart = coordinates
+                    .onGloballyPositioned { coords ->
+                        positionStart = coords
+                        positionStart?.takeIf { it.isAttached }?.let {
+                            startOffset = it.positionInParent()
+                        }
                     }
                     .clickable {
-                        positionStart?.takeIf { it.isAttached }?.let {
-                            startOffset = it.localToWindow(Offset.Zero)
-                        }
                         selectedPerson = people[0]
                     }
             )

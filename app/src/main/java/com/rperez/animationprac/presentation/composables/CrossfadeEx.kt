@@ -28,6 +28,7 @@ enum class MyColors(val color: Color) {
 @Composable
 fun CrossfadeDemo() {
     var setToColor by remember { mutableStateOf(MyColors.Red) }
+    var currentColor by remember { mutableStateOf(MyColors.Red) }
     Column {
         Row {
             MyColors.entries.forEach { color ->
@@ -43,15 +44,36 @@ fun CrossfadeDemo() {
                 }
             }
         }
-        Crossfade(targetState = setToColor, animationSpec = tween(3000)) { currColor ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(currColor.color),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("currColor = ${currColor.name} setToColor = ${setToColor.name}")
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Crossfade(targetState = setToColor, animationSpec = tween(3000)) { currColor ->
+                currentColor = currColor
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(currColor.color),
+                    contentAlignment = Alignment.Center
+                ) {}
             }
+            Crossfade(targetState = setToColor, animationSpec = tween(1000)) { currColor ->
+                currentColor = currColor
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.TopCenter
+                ) {
+                    when (currColor) {
+                        MyColors.Red -> Text(text = "RED")
+                        MyColors.Green -> Text(text = "GREEN")
+                        MyColors.Blue -> Text(text = "BLUE")
+                    }
+                }
+            }
+            Text(
+                text = "currColor = ${currentColor.name} setToColor = ${setToColor.name}"
+            )
         }
     }
 }

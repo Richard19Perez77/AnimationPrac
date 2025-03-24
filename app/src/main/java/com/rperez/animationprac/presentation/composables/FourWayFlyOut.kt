@@ -1,6 +1,7 @@
 package com.rperez.animationprac.presentation.composables
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationEndReason
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
@@ -23,7 +24,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
-import androidx.compose.ui.layout.positionInWindow
 
 @Composable
 fun FourWayFlyOut() {
@@ -36,6 +36,8 @@ fun FourWayFlyOut() {
     var endOffset by remember { mutableStateOf<Offset?>(null) }
     val offset = remember { Animatable(Offset.Zero, Offset.VectorConverter) }
 
+    var displayText by remember { mutableStateOf("")}
+
     if (selectedPerson != null) {
         selectedPerson?.let { person ->
             Box(
@@ -47,6 +49,7 @@ fun FourWayFlyOut() {
                 LaunchedEffect(startOffset, positionEnd) {
                     if (startOffset != null && endOffset != null) {
                         offset.snapTo(startOffset!!)
+                        displayText = person.name
                         offset.animateTo(endOffset!!, animationSpec = tween(1000))
                     }
                 }
@@ -59,7 +62,7 @@ fun FourWayFlyOut() {
                         }
                 ) {
                     Text(
-                        text = person.name,
+                        text = displayText,
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.onGloballyPositioned { coords ->
                             positionEnd = coords

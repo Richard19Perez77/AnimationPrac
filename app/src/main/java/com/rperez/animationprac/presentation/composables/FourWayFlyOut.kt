@@ -126,6 +126,21 @@ fun FourWayFlyOut() {
                         selectedPerson = people[2]
                     }
             )
+
+            Text(
+                text = people[3].name,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier
+                    .onGloballyPositioned { coords ->
+                        positionStart = coords
+                        positionStart?.takeIf { it.isAttached }?.let {
+                            startOffset = it.positionInParent()
+                        }
+                    }
+                    .clickable {
+                        selectedPerson = people[3]
+                    }
+            )
         }
     }
 }

@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.rperez.animationprac.presentation.composables.CrossfadeDemo
 import com.rperez.animationprac.presentation.composables.FadingBox
+import com.rperez.animationprac.presentation.composables.FourWayFlyOut
 import com.rperez.animationprac.presentation.composables.LevitationEffect
 import com.rperez.animationprac.presentation.composables.PeopleWithDetails
 import com.rperez.animationprac.presentation.composables.SlideFadeAnimation
@@ -87,6 +88,16 @@ class MainActivity : ComponentActivity() {
                                 contentAlignment = Alignment.Center
                             ) {
                                 PeopleWithDetails()
+                            }
+                        }
+                        item(key = 7) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .height(height.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                FourWayFlyOut()
                             }
                         }
                     }

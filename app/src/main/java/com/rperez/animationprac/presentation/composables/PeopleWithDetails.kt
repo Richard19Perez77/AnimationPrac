@@ -36,12 +36,7 @@ import kotlin.uuid.Uuid
 @Composable
 fun PeopleWithDetails() {
     val people = remember {
-        listOf<Person>(
-            Person(),
-            Person(),
-            Person(),
-            Person()
-        )
+        people
     }
 
     var selectedPerson by remember { mutableStateOf<Person?>(null) }
@@ -117,4 +112,13 @@ data class Person @OptIn(ExperimentalUuidApi::class) constructor(
     var age: Int = id.hashCode(),
     var email: String = id.toString(),
     var phone: Int = id.hashCode()
+)
+
+
+@OptIn(ExperimentalUuidApi::class)
+val people = listOf<Person>(
+    Person(),
+    Person(),
+    Person(),
+    Person()
 )

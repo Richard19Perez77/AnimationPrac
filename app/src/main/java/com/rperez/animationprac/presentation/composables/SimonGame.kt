@@ -1,29 +1,27 @@
 package com.rperez.animationprac.presentation.composables
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -34,52 +32,60 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SimonGame(viewModel: SimonViewModel = viewModel()) {
-    val state = viewModel.state.value
+    val simonState by viewModel.simonState
 
-    if (state.isGameOver) {
-        Column {
-            Button(
-                onClick = { viewModel.startGame() },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White,
-                    contentColor = Color.Black
-                )
+    Crossfade(
+        targetState = simonState.isGameOver,
+        animationSpec = tween(500)
+    ) { gameOver ->
+        if (gameOver) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
-                Column {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text("Score: ${viewModel.state.value.sequence.size - 1}")
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text("Restart?")
-                    Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = { viewModel.startGame() },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        contentColor = Color.Black
+                    )
+                ) {
+                    Column {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text("Score: ${viewModel.simonState.value.sequence.size - 1}")
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text("Restart?")
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
                 }
             }
-        }
-    } else {
-        Column {
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-                onClick = { viewModel.startGame() },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White,
-                    contentColor = Color.Black
+        } else {
+            Column {
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    onClick = { viewModel.startGame() },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        contentColor = Color.Black
+                    )
+                ) {
+                    Text(
+                        text = "Restart",
+                    )
+                }
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(5f)
                 )
-            ) {
-                Text(
-                    text = "Restart",
-                )
-            }
-            Spacer(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(5f)
-            )
-            Box(
-                modifier = Modifier.weight(10f)
-            ) {
-                Grid(viewModel, state)
+                Box(
+                    modifier = Modifier.weight(10f)
+                ) {
+                    Grid(viewModel, simonState)
+                }
             }
         }
     }
@@ -96,18 +102,18 @@ data class SimonState(
 val simonColors = listOf(Color(0xff3edd4b), Color(0xff4b3edd), Color(0xffdd4b3e), Color(0xffffea37))
 
 class SimonViewModel : ViewModel() {
-    private val _state = mutableStateOf(SimonState())
-    val state: State<SimonState> get() = _state
+    private val _simonState = mutableStateOf(SimonState())
+    val simonState: State<SimonState> get() = _simonState
 
     fun startGame() {
-        _state.value = SimonState()
+        _simonState.value = SimonState()
         nextRound()
     }
 
     fun nextRound() {
         val next = (0..3).random()
-        _state.value = _state.value.copy(
-            sequence = _state.value.sequence + next,
+        _simonState.value = _simonState.value.copy(
+            sequence = _simonState.value.sequence + next,
             userInput = emptyList(),
             isUserTurn = false
         )
@@ -116,40 +122,41 @@ class SimonViewModel : ViewModel() {
 
     private fun playSequence() {
         viewModelScope.launch {
-            _state.value.sequence.forEachIndexed { index, colorIndex ->
-                _state.value = _state.value.copy(flashingIndex = colorIndex)
+            _simonState.value.sequence.forEachIndexed { index, colorIndex ->
+                _simonState.value = _simonState.value.copy(flashingIndex = colorIndex)
                 delay(500)
-                _state.value = _state.value.copy(flashingIndex = null)
+                _simonState.value = _simonState.value.copy(flashingIndex = null)
                 delay(250)
             }
-            _state.value = _state.value.copy(isUserTurn = true)
+            _simonState.value = _simonState.value.copy(isUserTurn = true)
         }
     }
 
     fun onColorTap(index: Int) {
         viewModelScope.launch {
-            _state.value = _state.value.copy(flashingIndex = index)
+            _simonState.value = _simonState.value.copy(flashingIndex = index)
             delay(100)
-            _state.value = _state.value.copy(flashingIndex = null)
+            _simonState.value = _simonState.value.copy(flashingIndex = null)
         }
 
-        if (!_state.value.isUserTurn) return
+        if (!_simonState.value.isUserTurn) return
 
-        val updatedInput = _state.value.userInput + index
-        val correct = _state.value.sequence.take(updatedInput.size)
+        val updatedInput = _simonState.value.userInput + index
+        val correct = _simonState.value.sequence.take(updatedInput.size)
 
         if (correct == updatedInput) {
-            if (updatedInput.size == _state.value.sequence.size) {
-                _state.value = _state.value.copy(userInput = updatedInput, isUserTurn = false)
+            if (updatedInput.size == _simonState.value.sequence.size) {
+                _simonState.value =
+                    _simonState.value.copy(userInput = updatedInput, isUserTurn = false)
                 viewModelScope.launch {
                     delay(1000)
                     nextRound()
                 }
             } else {
-                _state.value = _state.value.copy(userInput = updatedInput)
+                _simonState.value = _simonState.value.copy(userInput = updatedInput)
             }
         } else {
-            _state.value = _state.value.copy(isGameOver = true)
+            _simonState.value = _simonState.value.copy(isGameOver = true)
         }
     }
 }
@@ -181,9 +188,3 @@ fun Grid(viewModel: SimonViewModel, state: SimonState) {
         }
     }
 }
-
-val gradientBrush = Brush.radialGradient(
-    colors = simonColors,
-    center = Offset(0.5f, 0.5f), // Center of the canvas
-    radius = 500f // Adjust to fit your layout
-)

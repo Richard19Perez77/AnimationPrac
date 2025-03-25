@@ -124,7 +124,7 @@ class SimonViewModel : ViewModel() {
         viewModelScope.launch {
             _simonState.value.sequence.forEachIndexed { index, colorIndex ->
                 _simonState.value = _simonState.value.copy(flashingIndex = colorIndex)
-                delay(500)
+                delay(250)
                 _simonState.value = _simonState.value.copy(flashingIndex = null)
                 delay(250)
             }

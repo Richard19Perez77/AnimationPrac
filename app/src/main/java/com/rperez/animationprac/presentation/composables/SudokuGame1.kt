@@ -25,7 +25,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 data class SudokuCell(
-    val row: Int, val col: Int, val value: Int = 0, val isEditable: Boolean = true
+    val row: Int,
+    val col: Int,
+    val value: Int = 0,
+    val isEditable: Boolean = true
 )
 
 class SudokuViewModel : ViewModel() {
@@ -42,8 +45,7 @@ class SudokuViewModel : ViewModel() {
         selectedCell?.let { (row, col) ->
             grid = grid.map { rowList ->
                 rowList.map {
-                    if (
-                        it.row == row
+                    if (it.row == row
                         && it.col == col
                         && it.isEditable
                     ) {
@@ -72,8 +74,9 @@ fun SudokuGame1(viewModel: SudokuViewModel = viewModel()) {
             Row {
                 for (cell in row) {
                     SudokuCellView(
-                        cell,
-                        isSelected = viewModel.selectedCell == cell.row to cell.col
+                        cell = cell,
+                        isSelected =
+                            viewModel.selectedCell == cell.row to cell.col
                     ) {
                         viewModel.selectCell(cell.row, cell.col)
                     }
@@ -112,8 +115,7 @@ fun SudokuCellView(cell: SudokuCell, isSelected: Boolean, onClick: () -> Unit) {
             .size(40.dp)
             .border(1.dp, if (isSelected) Color.Blue else Color.Gray)
             .background(if (!cell.isEditable) Color.LightGray else Color.White)
-            .clickable { onClick() },
-        contentAlignment = Alignment.Center
+            .clickable { onClick() }, contentAlignment = Alignment.Center
     ) {
         Text(
             text = if (cell.value != 0) cell.value.toString() else "",

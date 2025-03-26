@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -105,7 +106,10 @@ class SimonViewModel : ViewModel() {
     private val _simonState = mutableStateOf(SimonState())
     val simonState: State<SimonState> get() = _simonState
 
+    var job : Job? = null
+
     fun startGame() {
+        job?.cancel()
         _simonState.value = SimonState()
         nextRound()
     }
@@ -121,7 +125,7 @@ class SimonViewModel : ViewModel() {
     }
 
     private fun playSequence() {
-        viewModelScope.launch {
+        job = viewModelScope.launch {
             _simonState.value.sequence.forEachIndexed { index, colorIndex ->
                 _simonState.value = _simonState.value.copy(flashingIndex = colorIndex)
                 delay(250)
@@ -133,7 +137,7 @@ class SimonViewModel : ViewModel() {
     }
 
     fun onColorTap(index: Int) {
-        viewModelScope.launch {
+        job = viewModelScope.launch {
             _simonState.value = _simonState.value.copy(flashingIndex = index)
             delay(100)
             _simonState.value = _simonState.value.copy(flashingIndex = null)
@@ -148,7 +152,7 @@ class SimonViewModel : ViewModel() {
             if (updatedInput.size == _simonState.value.sequence.size) {
                 _simonState.value =
                     _simonState.value.copy(userInput = updatedInput, isUserTurn = false)
-                viewModelScope.launch {
+                job = viewModelScope.launch {
                     delay(1000)
                     nextRound()
                 }

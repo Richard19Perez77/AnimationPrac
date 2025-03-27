@@ -67,10 +67,9 @@ class SudokuUtil2 {
 
     init {
         var created = createValues(row, col)
-        var tries = 1000
-        while (!created && tries > 0) {
-            println("try $tries")
-            tries--
+        var tries = 0
+        while (!created) {
+            tries++
             index = 0
             row = 0
             col = 0
@@ -82,6 +81,7 @@ class SudokuUtil2 {
             }
             created = createValues(row, col)
         }
+        println("tries $tries")
         var values: List<Int> = gridValues.flatMap { it }
         println("values count ${values.count()}")
         println("values $values")
@@ -115,7 +115,7 @@ class SudokuUtil2 {
             var sorted = it.toMutableList().sorted()
             sorted.forEachIndexed { i, v ->
                 if (i != v - 1) {
-                    println("error: $i, $v")
+                    println("invalid: $i, $v")
                 } else {
                     println("valid: $i, $v")
                 }

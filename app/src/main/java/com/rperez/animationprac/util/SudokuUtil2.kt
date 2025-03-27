@@ -83,7 +83,44 @@ class SudokuUtil2 {
             created = createValues(row, col)
         }
         var values: List<Int> = gridValues.flatMap { it }
+        println("values count ${values.count()}")
         println("values $values")
+
+        var results = mutableListOf<List<Int>>()
+        grids.forEach {
+            var temp = mutableListOf<Int>()
+            it.forEach {
+                temp.add(values[it])
+            }
+            results.add(temp)
+        }
+
+        rows.forEach {
+            var temp = mutableListOf<Int>()
+            it.forEach {
+                temp.add(values[it])
+            }
+            results.add(temp)
+        }
+
+        cols.forEach {
+            var temp = mutableListOf<Int>()
+            it.forEach {
+                temp.add(values[it])
+            }
+            results.add(temp)
+        }
+
+        results.forEach {
+            var sorted = it.toMutableList().sorted()
+            sorted.forEachIndexed { i, v ->
+                if (i != v - 1) {
+                    println("error: $i, $v")
+                } else {
+                    println("valid: $i, $v")
+                }
+            }
+        }
     }
 
     fun createValues(row1: Int, col1: Int): Boolean {

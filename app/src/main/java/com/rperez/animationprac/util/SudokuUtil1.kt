@@ -1,10 +1,10 @@
 package com.rperez.animationprac.util
 
+import java.util.Locale
+import kotlin.system.measureNanoTime
 
 class SudokuUtil1 {
     private val board = Array(9) { IntArray(9) { 0 } }
-    private var fillBoardCounter = 0
-    private var backtrackCounter = 0
 
     private fun isSafe(board: Array<IntArray>, row: Int, col: Int, num: Int): Boolean {
         for (i in 0..8) {
@@ -19,7 +19,6 @@ class SudokuUtil1 {
     }
 
     private fun fillBoard(board: Array<IntArray>): Boolean {
-        fillBoardCounter++
         for (row in 0..8) {
             for (col in 0..8) {
                 if (board[row][col] == 0) {
@@ -29,7 +28,6 @@ class SudokuUtil1 {
                             board[row][col] = num
                             if (fillBoard(board)) return true
                             board[row][col] = 0 // backtrack
-                            backtrackCounter++
                         }
                     }
                     return false
@@ -41,12 +39,37 @@ class SudokuUtil1 {
 
     init {
         fillBoard(board)
-        println("fillBoardCounter $fillBoardCounter")
-        println("backtrackCounter $backtrackCounter")
-        board.forEach { println(it.joinToString()) }
+//        val values = board.flatMap { it.toList() }
+//            .joinToString(",")
+//        println("values $values")
     }
 }
 
 fun main() {
-    SudokuUtil1()
+    val times2 = (1..500).map {
+        measureNanoTime {
+            SudokuUtil2()
+        }
+    }
+
+    val avg2 = times2.average()
+    val max2 = times2.maxOrNull()
+    val min2 = times2.minOrNull()
+
+    val times1 = (1..500).map {
+        measureNanoTime {
+            SudokuUtil1()
+        }
+    }
+
+    val avg1 = times1.average()
+    val max1 = times1.maxOrNull()
+    val min1 = times1.minOrNull()
+
+    println("+------------+----------------------+----------------------+----------------------+")
+    println("| Algorithm  |       Average (ns)   |         Min (ns)     |         Max (ns)     |")
+    println("+------------+----------------------+----------------------+----------------------+")
+    println(String.format(Locale.getDefault(), "| %-10s | %20.2f | %20d | %20d |", "Sudoku2", avg2, min2, max2))
+    println(String.format(Locale.getDefault(), "| %-10s | %20.2f | %20d | %20d |", "Sudoku1", avg1, min1, max1))
+    println("+------------+----------------------+----------------------+----------------------+")
 }

@@ -1,6 +1,8 @@
 package com.rperez.animationprac.util
 
+import java.util.Locale
 import kotlin.random.Random
+import kotlin.system.measureNanoTime
 
 /**
  * Sudoku util2
@@ -81,10 +83,8 @@ class SudokuUtil2 {
             }
             created = createValues(row, col)
         }
-        println("tries $tries")
         val values: List<Int> = gridValues.flatMap { it }
-        println("values count ${values.count()}")
-        println("values $values")
+        //println("values ${values.joinToString(",")}")
 
         val results = mutableListOf<List<Int>>()
         grids.forEach { grid ->
@@ -167,5 +167,30 @@ class SudokuUtil2 {
 }
 
 fun main() {
-    SudokuUtil2()
+    val times2 = (1..500).map {
+        measureNanoTime {
+            SudokuUtil2()
+        }
+    }
+
+    val avg2 = times2.average()
+    val max2 = times2.maxOrNull()
+    val min2 = times2.minOrNull()
+
+    val times1 = (1..500).map {
+        measureNanoTime {
+            SudokuUtil1()
+        }
+    }
+
+    val avg1 = times1.average()
+    val max1 = times1.maxOrNull()
+    val min1 = times1.minOrNull()
+
+    println("+------------+----------------------+----------------------+----------------------+")
+    println("| Algorithm  |       Average (ns)   |         Min (ns)     |         Max (ns)     |")
+    println("+------------+----------------------+----------------------+----------------------+")
+    println(String.format(Locale.getDefault(), "| %-10s | %20.2f | %20d | %20d |", "Sudoku2", avg2, min2, max2))
+    println(String.format(Locale.getDefault(), "| %-10s | %20.2f | %20d | %20d |", "Sudoku1", avg1, min1, max1))
+    println("+------------+----------------------+----------------------+----------------------+")
 }

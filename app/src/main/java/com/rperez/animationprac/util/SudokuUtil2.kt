@@ -11,13 +11,13 @@ import kotlin.random.Random
  *  after each valid value is found remove the value from other sets
  *  sets include grid, row and column
  *  at the end should have a valid sudoku puzzle array of size 81 for result list to return
- *  might have to check for empty gridvalues from constant removals from previous grid row and column values
+ *  might have to check for empty grid values from constant removals from previous grid row and column values
  *
  * @constructor Create empty Sudoku util2
  */
 class SudokuUtil2 {
 
-    var grids = listOf<List<Int>>(
+    private var grids = listOf(
         listOf(0, 1, 2, 9, 10, 11, 18, 19, 20),
         listOf(3, 4, 5, 12, 13, 14, 21, 22, 23),
         listOf(6, 7, 8, 15, 16, 17, 24, 25, 26),
@@ -29,7 +29,7 @@ class SudokuUtil2 {
         listOf(60, 61, 62, 69, 70, 71, 78, 79, 80),
     )
 
-    var cols = listOf<List<Int>>(
+    private var cols = listOf(
         listOf(0, 9, 18, 27, 36, 45, 54, 63, 72),
         listOf(1, 10, 19, 28, 37, 46, 55, 64, 73),
         listOf(2, 11, 20, 29, 38, 47, 56, 65, 74),
@@ -41,7 +41,7 @@ class SudokuUtil2 {
         listOf(8, 17, 26, 35, 44, 53, 62, 71, 80),
     )
 
-    val rows = listOf<List<Int>>(
+    private val rows = listOf(
         listOf(0, 1, 2, 3, 4, 5, 6, 7, 8),
         listOf(9, 10, 11, 12, 13, 14, 15, 16, 17),
         listOf(18, 19, 20, 21, 22, 23, 24, 25, 26),
@@ -54,16 +54,16 @@ class SudokuUtil2 {
     )
 
     // each index should have a list of ints
-    var gridValues = Array<MutableList<Int>>(81) {
-        mutableListOf<Int>(1, 2, 3, 4, 5, 6, 7, 8, 9)
+    private var gridValues = Array(81) {
+        mutableListOf(1, 2, 3, 4, 5, 6, 7, 8, 9)
     }
 
-    var index = 0
-    var row = 0
-    var col = 0
-    var grid = 0
-    var itemValue = 0
-    var seed = 0
+    private var index = 0
+    private var row = 0
+    private var col = 0
+    private var grid = 0
+    private var itemValue = 0
+    private var seed = 0
 
     init {
         var created = createValues(row, col)
@@ -76,43 +76,43 @@ class SudokuUtil2 {
             grid = 0
             itemValue = 0
             seed = 0
-            gridValues = Array<MutableList<Int>>(81) {
-                mutableListOf<Int>(1, 2, 3, 4, 5, 6, 7, 8, 9)
+            gridValues = Array(81) {
+                mutableListOf(1, 2, 3, 4, 5, 6, 7, 8, 9)
             }
             created = createValues(row, col)
         }
         println("tries $tries")
-        var values: List<Int> = gridValues.flatMap { it }
+        val values: List<Int> = gridValues.flatMap { it }
         println("values count ${values.count()}")
         println("values $values")
 
-        var results = mutableListOf<List<Int>>()
-        grids.forEach {
-            var temp = mutableListOf<Int>()
-            it.forEach {
+        val results = mutableListOf<List<Int>>()
+        grids.forEach { grid ->
+            val temp = mutableListOf<Int>()
+            grid.forEach {
                 temp.add(values[it])
             }
             results.add(temp)
         }
 
-        rows.forEach {
-            var temp = mutableListOf<Int>()
-            it.forEach {
+        rows.forEach { row ->
+            val temp = mutableListOf<Int>()
+            row.forEach {
                 temp.add(values[it])
             }
             results.add(temp)
         }
 
-        cols.forEach {
-            var temp = mutableListOf<Int>()
-            it.forEach {
+        cols.forEach { col ->
+            val temp = mutableListOf<Int>()
+            col.forEach {
                 temp.add(values[it])
             }
             results.add(temp)
         }
 
         results.forEach {
-            var sorted = it.toMutableList().sorted()
+            val sorted = it.toMutableList().sorted()
             sorted.forEachIndexed { i, v ->
                 if (i != v - 1) {
                     println("invalid: $i, $v")
@@ -123,7 +123,7 @@ class SudokuUtil2 {
         }
     }
 
-    fun createValues(row1: Int, col1: Int): Boolean {
+    private fun createValues(row1: Int, col1: Int): Boolean {
         println("$row1, $col1")
 
         // don't need index if we have row and column
@@ -142,17 +142,17 @@ class SudokuUtil2 {
         itemValue = gridValues[index][seed]
 
         // remove it from the grid lists
-        grids[grid].forEach { it ->
+        grids[grid].forEach {
             gridValues[it].remove(itemValue)
         }
 
         // remove it from the row lists
-        rows[row1].forEach { it ->
+        rows[row1].forEach {
             gridValues[it].remove(itemValue)
         }
 
         // remove it from the colum lists
-        cols[col1].forEach { it ->
+        cols[col1].forEach {
             gridValues[it].remove(itemValue)
         }
 

@@ -116,8 +116,6 @@ class SudokuUtil2 {
             sorted.forEachIndexed { i, v ->
                 if (i != v - 1) {
                     println("invalid: $i, $v")
-                } else {
-                    println("valid: $i, $v")
                 }
             }
         }
@@ -128,9 +126,7 @@ class SudokuUtil2 {
 
         // don't need index if we have row and column
         index = rows[row1][col1]
-        println("index $index")
         grid = grids.indexOfFirst { it.contains(index) }
-        println("grid $grid")
 
         // get random value from list of available left
         if (gridValues[index].isEmpty()) {

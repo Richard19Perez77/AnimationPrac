@@ -128,7 +128,6 @@ class SudokuUtil2 {
 
         // get random value from list of available left
         if (gridValues[index].isEmpty()) {
-            println("empty list at $row1, $col1")
             return false
         }
 

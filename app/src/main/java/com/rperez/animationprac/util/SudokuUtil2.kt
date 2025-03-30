@@ -122,8 +122,6 @@ class SudokuUtil2 {
     }
 
     private fun createValues(row1: Int, col1: Int): Boolean {
-        println("$row1, $col1")
-
         // don't need index if we have row and column
         index = rows[row1][col1]
         grid = grids.indexOfFirst { it.contains(index) }

@@ -29,6 +29,12 @@ class SudokuUtil2 {
         listOf(60, 61, 62, 69, 70, 71, 78, 79, 80),
     )
 
+    private var prefillGrids = listOf(
+        listOf(0, 1, 2, 9, 10, 11, 18, 19, 20),
+        listOf(30, 31, 32, 39, 40, 41, 48, 49, 50),
+        listOf(60, 61, 62, 69, 70, 71, 78, 79, 80),
+    )
+
     private var cols = listOf(
         listOf(0, 9, 18, 27, 36, 45, 54, 63, 72),
         listOf(1, 10, 19, 28, 37, 46, 55, 64, 73),
@@ -66,6 +72,7 @@ class SudokuUtil2 {
     private var seed = 0
 
     init {
+        prefillSetup()
         var created = createValues(row, col)
         var tries = 0
         while (!created) {
@@ -79,6 +86,7 @@ class SudokuUtil2 {
             gridValues = Array(81) {
                 mutableListOf(1, 2, 3, 4, 5, 6, 7, 8, 9)
             }
+            prefillSetup()
             created = createValues(row, col)
         }
         println("tries $tries")
@@ -121,9 +129,51 @@ class SudokuUtil2 {
         }
     }
 
+    private fun prefillSetup() {
+        prefillGrids.forEach { prefillGrid ->
+            val list = mutableListOf(1, 2, 3, 4, 5, 6, 7, 8, 9)
+            list.shuffle()
+            prefillGrid.forEach { preIndex ->
+                val temp = list.first()
+                list.remove(temp)
+
+                val r = preIndex / 9
+                val c = preIndex % 9
+
+                // remove it from the grid lists
+                grid = grids.indexOfFirst { it.contains(preIndex) }
+                grids[grid].forEach {
+                    gridValues[it].remove(temp)
+                }
+
+                // remove it from the row lists
+                rows[r].forEach {
+                    gridValues[it].remove(temp)
+                }
+
+                // remove it from the colum lists
+                cols[c].forEach {
+                    gridValues[it].remove(temp)
+                }
+
+                gridValues[preIndex].clear()
+                gridValues[preIndex].add(temp)
+            }
+        }
+    }
+
     private fun createValues(row1: Int, col1: Int): Boolean {
         // don't need index if we have row and column
         index = rows[row1][col1]
+        if(prefillGrids.flatten().contains(index)) {
+            col++
+            if (col > 8) {
+                col = 0
+                row++
+            }
+            return createValues(row, col)
+        }
+
         grid = grids.indexOfFirst { it.contains(index) }
 
         // get random value from list of available left
@@ -154,7 +204,7 @@ class SudokuUtil2 {
         gridValues[index].clear()
         gridValues[index].add(itemValue)
 
-        if (index == 80) {
+        if (index == 77) {
             return true
         }
 

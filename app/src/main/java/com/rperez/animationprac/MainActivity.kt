@@ -1,5 +1,6 @@
 package com.rperez.animationprac
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,6 +29,7 @@ import com.rperez.animationprac.presentation.composables.SudokuGame
 import com.rperez.animationprac.ui.theme.AnimationPracTheme
 
 class MainActivity : ComponentActivity() {
+    @SuppressLint("ConfigurationScreenWidthHeight")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

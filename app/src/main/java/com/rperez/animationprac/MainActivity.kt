@@ -24,8 +24,7 @@ import com.rperez.animationprac.presentation.composables.PeopleWithDetails
 import com.rperez.animationprac.presentation.composables.SimonGame
 import com.rperez.animationprac.presentation.composables.SlideFadeAnimation
 import com.rperez.animationprac.presentation.composables.Snowfall
-import com.rperez.animationprac.presentation.composables.SudokuGame1
-import com.rperez.animationprac.presentation.composables.SudokuGame2
+import com.rperez.animationprac.presentation.composables.SudokuGame
 import com.rperez.animationprac.ui.theme.AnimationPracTheme
 
 class MainActivity : ComponentActivity() {
@@ -38,23 +37,15 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                 ) {
                     val height = LocalConfiguration.current.screenHeightDp
+
                     LazyColumn {
-                        item(key = -1) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(height.dp)
-                            ) {
-                                SudokuGame2()
-                            }
-                        }
                         item(key = 0) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(height.dp)
                             ) {
-                                SudokuGame1()
+                                SudokuGame()
                             }
                         }
                         item(key = 1) {

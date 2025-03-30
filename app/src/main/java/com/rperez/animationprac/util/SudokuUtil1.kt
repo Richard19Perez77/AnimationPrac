@@ -39,9 +39,6 @@ class SudokuUtil1 {
 
     init {
         fillBoard(board)
-//        val values = board.flatMap { it.toList() }
-//            .joinToString(",")
-//        println("values $values")
     }
 }
 

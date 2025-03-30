@@ -1,5 +1,7 @@
 package com.rperez.animationprac.presentation.composables
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 
-class SudokuViewModel2 : ViewModel() {
+class SudokuViewModel : ViewModel() {
     private val _board = mutableStateOf(Array(9) { IntArray(9) { 0 } })
     val board: State<Array<IntArray>> = _board
 
@@ -46,10 +48,10 @@ class SudokuViewModel2 : ViewModel() {
         _isSolved.value = false
 
         solveSudoku()
-        removeNumbers(40)
+        removeNumbers()
     }
 
-    fun solveSudoku(): Boolean {
+    private fun solveSudoku(): Boolean {
         for (row in 0 until 9) {
             for (col in 0 until 9) {
                 if (_board.value[row][col] == 0) {
@@ -69,24 +71,25 @@ class SudokuViewModel2 : ViewModel() {
         return true
     }
 
-    fun isValid(row: Int, col: Int, num: Int): Boolean {
+    private fun isValid(row: Int, col: Int, num: Int): Boolean {
         for (x in 0 until 9) {
-            if (_board.value[row][x] == num) return false
-        }
-        for (x in 0 until 9) {
-            if (_board.value[x][col] == num) return false
+            if (x != col && _board.value[row][x] == num) return false
+            if (x != row && _board.value[x][col] == num) return false
         }
         val boxRow = row - row % 3
         val boxCol = col - col % 3
         for (i in 0 until 3) {
             for (j in 0 until 3) {
-                if (_board.value[boxRow + i][boxCol + j] == num) return false
+                val r = boxRow + i
+                val c = boxCol + j
+                if ((r != row || c != col) && _board.value[r][c] == num) return false
             }
         }
         return true
     }
 
-    fun removeNumbers(count: Int) {
+    private fun removeNumbers() {
+        val count = 2
         var removed = 0
         while (removed < count) {
             val row = (0 until 9).random()
@@ -106,68 +109,90 @@ class SudokuViewModel2 : ViewModel() {
         val (row, col) = _selectedCell.value
         if (row in 0..8 && col in 0..8) {
             _board.value[row][col] = value
+            _board.value = _board.value.copyOf()
             checkSolved()
         }
     }
 
-    fun checkSolved() {
+    private fun checkSolved() {
+        _isSolved.value = isBoardSolved()
+    }
+
+    private fun isBoardSolved(): Boolean {
         for (row in 0 until 9) {
             for (col in 0 until 9) {
-                if (_board.value[row][col] == 0) return
-                if (!isValid(row, col, _board.value[row][col])) return
+                val num = _board.value[row][col]
+                if (num == 0 || !isValid(row, col, num)) return false
             }
         }
-        _isSolved.value = true
+        return true
     }
 }
 
 @Composable
-fun SudokuGame2(viewModel: SudokuViewModel2 = viewModel()) {
+fun SudokuGame(viewModel: SudokuViewModel = viewModel()) {
     val board by viewModel.board
     val selectedCell by viewModel.selectedCell
     val isSolved by viewModel.isSolved
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            modifier = Modifier.padding(bottom = 16.dp),
-            text = "Sudoku",
-            style = MaterialTheme.typography.headlineLarge
-        )
+    Crossfade(
+        targetState = isSolved,
+        animationSpec = tween(500)
+    ) { solved ->
+        when (solved) {
+            true -> {
+                Column(
+                    modifier = Modifier
+                        .clickable { viewModel.generateNewGame() }
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Congratulations! You solved it!",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
 
-        SudokuBoard(
-            board = board,
-            selectedCell = selectedCell,
-            onCellSelected = viewModel::selectCell
-        )
+            false -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        modifier = Modifier.padding(bottom = 16.dp),
+                        text = "Sudoku",
+                        style = MaterialTheme.typography.headlineLarge
+                    )
 
-        Spacer(modifier = Modifier.height(16.dp))
+                    SudokuBoard(
+                        board = board,
+                        selectedCell = selectedCell,
+                        onCellSelected = viewModel::selectCell
+                    )
 
-        NumberPad2(
-            onNumberSelected = viewModel::setCellValue
-        )
+                    Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
+                    NumberPad(
+                        onNumberSelected = viewModel::setCellValue
+                    )
 
-        Button(
-            modifier = Modifier.fillMaxWidth(0.6f),
-            onClick = { viewModel.generateNewGame() }
-        ) {
-            Text("New Game")
-        }
+                    Spacer(modifier = Modifier.height(16.dp))
 
-        if (isSolved) {
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Congratulations! You solved it!",
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.primary
-            )
+                    Button(
+                        modifier = Modifier.fillMaxWidth(0.6f),
+                        onClick = { viewModel.generateNewGame() }
+                    ) {
+                        Text("New Game")
+                    }
+                }
+            }
         }
     }
 }
@@ -188,7 +213,7 @@ fun SudokuBoard(
                 for (col in 0 until 9) {
                     val isSelected = selectedCell.first == row && selectedCell.second == col
                     val backgroundColor = if (isSelected) {
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                        MaterialTheme.colorScheme.primary
                     } else {
                         MaterialTheme.colorScheme.surface
                     }
@@ -228,10 +253,10 @@ fun SudokuBoard(
 }
 
 @Composable
-fun NumberPad2(onNumberSelected: (Int) -> Unit) {
+fun NumberPad(onNumberSelected: (Int) -> Unit) {
     Column {
         Row {
-            for (num in 1..5) {
+            for (num in 1..3) {
                 NumberButton(
                     num,
                     onNumberSelected
@@ -239,12 +264,19 @@ fun NumberPad2(onNumberSelected: (Int) -> Unit) {
             }
         }
         Row {
-            for (num in 6..9) {
+            for (num in 4..6) {
                 NumberButton(
                     num,
                     onNumberSelected
                 )
-                NumberButton(0, onNumberSelected)
+            }
+        }
+        Row {
+            for (num in 7..9) {
+                NumberButton(
+                    num,
+                    onNumberSelected
+                )
             }
         }
     }
@@ -254,12 +286,9 @@ fun NumberPad2(onNumberSelected: (Int) -> Unit) {
 fun NumberButton(number: Int, onClick: (Int) -> Unit) {
     Button(
         onClick = { onClick(number) },
-        modifier = Modifier
-            .size(48.dp)
-            .padding(4.dp)
     ) {
         Text(
-            text = if (number == 0) "X" else number.toString(),
+            text = number.toString(),
             style = MaterialTheme.typography.titleMedium
         )
     }
